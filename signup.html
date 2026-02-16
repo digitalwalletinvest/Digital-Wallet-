@@ -5,7 +5,6 @@
 <title>Digital Wallet Investment - Sign Up</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- Firebase compat version (simpler for web pages) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
@@ -23,7 +22,7 @@ color:white;
 }
 
 .card{
-background:#1f7a4c;   /* corporate green */
+background:#1f7a4c;
 color:white;
 padding:40px;
 border-radius:15px;
@@ -33,13 +32,8 @@ box-shadow:0 15px 40px rgba(0,0,0,0.3);
 text-align:center;
 }
 
-h1{
-margin-bottom:5px;
-color:#203a43;
-}
-
-.subtitle{ color:#e8f5e9; }
-.small{ color:#e8f5e9; }
+h1{margin-bottom:5px;color:white;}
+.subtitle{color:#e8f5e9;margin-bottom:25px;}
 
 input{
 width:100%;
@@ -48,11 +42,6 @@ margin:8px 0;
 border-radius:8px;
 border:1px solid #ddd;
 font-size:15px;
-}
-
-input:focus{
-outline:none;
-border:1px solid #2c5364;
 }
 
 .signup-btn{
@@ -65,12 +54,9 @@ color:white;
 font-size:18px;
 border-radius:8px;
 cursor:pointer;
-transition:0.3s;
 }
 
-.signup-btn:hover{
-background:#00e676;
-}
+.signup-btn:hover{background:#00e676;}
 
 .google-btn{
 width:100%;
@@ -84,10 +70,28 @@ border-radius:8px;
 cursor:pointer;
 }
 
-.small{
-margin-top:18px;
-font-size:13px;
-color:#777;
+.signin-link{margin-top:15px;font-size:14px;}
+.signin-link a{color:white;font-weight:bold;}
+
+.small{margin-top:18px;font-size:13px;color:#e8f5e9;}
+
+.toast{
+position:fixed;
+bottom:30px;
+left:50%;
+transform:translateX(-50%) translateY(100px);
+background:#1f7a4c;
+color:white;
+padding:16px 28px;
+border-radius:8px;
+box-shadow:0 10px 25px rgba(0,0,0,0.3);
+opacity:0;
+transition:0.5s;
+z-index:9999;
+}
+.toast.show{
+opacity:1;
+transform:translateX(-50%) translateY(0);
 }
 </style>
 </head>
@@ -102,19 +106,33 @@ color:#777;
 <input type="text" id="username" placeholder="Username">
 <input type="email" id="email" placeholder="Email">
 <input type="tel" id="phone" placeholder="Phone number">
-<input type="password" id="password" placeholder="Password">
+<input type="password" id="password" placeholder="Password (min 6 characters)">
+<input type="password" id="confirmPassword" placeholder="Confirm Password">
 
 <button class="signup-btn" onclick="signup()">Create Account</button>
-
 <button class="google-btn" onclick="googleSignup()">Continue with Google</button>
+
+<div class="signin-link">
+Already have account? <a href="signin.html">Sign in</a>
+</div>
 
 <div class="small">Secure investment platform</div>
 
 </div>
 
+<div id="toast" class="toast"></div>
+
 <script>
 
-// YOUR FIREBASE CONFIG
+function showToast(msg,color="#1f7a4c"){
+const t=document.getElementById("toast");
+t.innerText=msg;
+t.style.background=color;
+t.classList.add("show");
+setTimeout(()=>t.classList.remove("show"),3000);
+}
+
+/* FIREBASE CONFIG */
 const firebaseConfig = {
 apiKey: "AIzaSyDaEphuY2kQue8m-20DDs68JDgQirAycBE",
 authDomain: "digital-wallet-40297.firebaseapp.com",
@@ -126,76 +144,79 @@ appId: "1:953454788272:android:961fd704f587cf1b8c8575"
 };
 
 firebase.initializeApp(firebaseConfig);
-
 const auth = firebase.auth();
 const db = firebase.database();
 
-
-// NORMAL SIGNUP
+/* SIGNUP */
 function signup(){
 
-const username=document.getElementById("username").value;
-const email=document.getElementById("email").value;
-const phone=document.getElementById("phone").value;
+const username=document.getElementById("username").value.trim();
+const email=document.getElementById("email").value.trim();
+const phone=document.getElementById("phone").value.trim();
 const password=document.getElementById("password").value;
+const confirm=document.getElementById("confirmPassword").value;
 
-if(!username || !email || !phone || !password){
-alert("Please fill all fields");
+if(!username || !email || !phone || !password || !confirm){
+showToast("Please fill all fields","#e53935");
+return;
+}
+
+if(password.length<6){
+showToast("Password must be at least 6 characters","#e53935");
+return;
+}
+
+if(password!==confirm){
+showToast("Passwords do not match","#e53935");
 return;
 }
 
 auth.createUserWithEmailAndPassword(email,password)
-
 .then((userCredential)=>{
 
 const uid=userCredential.user.uid;
 
 db.ref("users/"+uid).set({
-username:username,
-email:email,
-phone:phone,
+username,
+email,
+phone,
 balance:0,
 created:new Date().toISOString()
 });
 
-alert("Account created successfully!");
+showToast("Account created successfully!");
 
-window.location.href="dashboard.html";
+setTimeout(()=>window.location.href="dashboard.html",1500);
 
 })
-
-.catch(error=>alert(error.message));
+.catch(error=>showToast(error.message,"#e53935"));
 
 }
 
-
-
-// GOOGLE SIGNUP
+/* GOOGLE SIGNUP */
 function googleSignup(){
 
 const provider=new firebase.auth.GoogleAuthProvider();
 
 auth.signInWithPopup(provider)
-
 .then((result)=>{
 
 const user=result.user;
 
 db.ref("users/"+user.uid).update({
-username:user.displayName,
+username:user.displayName || "Google User",
 email:user.email,
 phone:user.phoneNumber || "",
 balance:0,
 created:new Date().toISOString()
 });
 
-alert("Google sign up successful");
+showToast("Google sign up successful");
 
-window.location.href="dashboard.html";
+setTimeout(()=>window.location.href="dashboard.html",1500);
 
 })
-
-.catch(error=>alert(error.message));
+.catch(error=>showToast(error.message,"#e53935"));
 
 }
 
