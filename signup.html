@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Digital Wallet Investment - Sign Up</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Firebase compat version (simpler for web pages) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+<style>
+body{
+margin:0;
+font-family:Arial, sans-serif;
+background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+color:white;
+}
+
+.card{
+background:#1f7a4c;   /* corporate green */
+color:white;
+padding:40px;
+border-radius:15px;
+width:95%;
+max-width:420px;
+box-shadow:0 15px 40px rgba(0,0,0,0.3);
+text-align:center;
+}
+
+h1{
+margin-bottom:5px;
+color:#203a43;
+}
+
+.subtitle{ color:#e8f5e9; }
+.small{ color:#e8f5e9; }
+
+input{
+width:100%;
+padding:14px;
+margin:8px 0;
+border-radius:8px;
+border:1px solid #ddd;
+font-size:15px;
+}
+
+input:focus{
+outline:none;
+border:1px solid #2c5364;
+}
+
+.signup-btn{
+width:100%;
+padding:15px;
+margin-top:10px;
+border:none;
+background:#00c853;
+color:white;
+font-size:18px;
+border-radius:8px;
+cursor:pointer;
+transition:0.3s;
+}
+
+.signup-btn:hover{
+background:#00e676;
+}
+
+.google-btn{
+width:100%;
+padding:13px;
+margin-top:15px;
+border:none;
+background:#4285F4;
+color:white;
+font-size:16px;
+border-radius:8px;
+cursor:pointer;
+}
+
+.small{
+margin-top:18px;
+font-size:13px;
+color:#777;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<h1>Digital Wallet Investment</h1>
+<div class="subtitle">Create your investor account</div>
+
+<input type="text" id="username" placeholder="Username">
+<input type="email" id="email" placeholder="Email">
+<input type="tel" id="phone" placeholder="Phone number">
+<input type="password" id="password" placeholder="Password">
+
+<button class="signup-btn" onclick="signup()">Create Account</button>
+
+<button class="google-btn" onclick="googleSignup()">Continue with Google</button>
+
+<div class="small">Secure investment platform</div>
+
+</div>
+
+<script>
+
+// YOUR FIREBASE CONFIG
+const firebaseConfig = {
+apiKey: "AIzaSyDaEphuY2kQue8m-20DDs68JDgQirAycBE",
+authDomain: "digital-wallet-40297.firebaseapp.com",
+databaseURL: "https://digital-wallet-40297-default-rtdb.firebaseio.com",
+projectId: "digital-wallet-40297",
+storageBucket: "digital-wallet-40297.firebasestorage.app",
+messagingSenderId: "953454788272",
+appId: "1:953454788272:android:961fd704f587cf1b8c8575"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+const db = firebase.database();
+
+
+// NORMAL SIGNUP
+function signup(){
+
+const username=document.getElementById("username").value;
+const email=document.getElementById("email").value;
+const phone=document.getElementById("phone").value;
+const password=document.getElementById("password").value;
+
+if(!username || !email || !phone || !password){
+alert("Please fill all fields");
+return;
+}
+
+auth.createUserWithEmailAndPassword(email,password)
+
+.then((userCredential)=>{
+
+const uid=userCredential.user.uid;
+
+db.ref("users/"+uid).set({
+username:username,
+email:email,
+phone:phone,
+balance:0,
+created:new Date().toISOString()
+});
+
+alert("Account created successfully!");
+
+window.location.href="dashboard.html";
+
+})
+
+.catch(error=>alert(error.message));
+
+}
+
+
+
+// GOOGLE SIGNUP
+function googleSignup(){
+
+const provider=new firebase.auth.GoogleAuthProvider();
+
+auth.signInWithPopup(provider)
+
+.then((result)=>{
+
+const user=result.user;
+
+db.ref("users/"+user.uid).update({
+username:user.displayName,
+email:user.email,
+phone:user.phoneNumber || "",
+balance:0,
+created:new Date().toISOString()
+});
+
+alert("Google sign up successful");
+
+window.location.href="dashboard.html";
+
+})
+
+.catch(error=>alert(error.message));
+
+}
+
+</script>
+
+</body>
+</html>
