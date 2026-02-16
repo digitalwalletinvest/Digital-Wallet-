@@ -11,85 +11,84 @@
 
 <style>
 body{
-margin:0;
-font-family:Arial, sans-serif;
-background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
 }
 
 .card{
-background:#1f7a4c;
-color:white;
-padding:40px;
-border-radius:15px;
-width:95%;
-max-width:420px;
-box-shadow:0 15px 40px rgba(0,0,0,0.3);
-text-align:center;
+  background:#1f7a4c;
+  color:white;
+  padding:40px;
+  border-radius:15px;
+  width:95%;
+  max-width:420px;
+  box-shadow:0 15px 40px rgba(0,0,0,0.3);
+  text-align:center;
 }
 
 h1{margin-bottom:5px;}
 .subtitle{color:#e8f5e9;margin-bottom:25px;}
 
 input{
-width:100%;
-padding:14px;
-margin:8px 0;
-border-radius:8px;
-border:1px solid #ddd;
-font-size:15px;
+  width:100%;
+  padding:14px;
+  margin:8px 0;
+  border-radius:8px;
+  border:1px solid #ddd;
+  font-size:15px;
 }
 
 .checkbox-container{
-display:flex;
-align-items:center;
-margin:5px 0;
-font-size:14px;
+  display:flex;
+  align-items:center;
+  margin:5px 0;
+  font-size:14px;
 }
 
 .checkbox-container input[type="checkbox"]{
-margin-right:8px;
+  margin-right:8px;
 }
 
 .signin-btn{
-width:100%;
-padding:15px;
-margin-top:10px;
-border:none;
-background:#00c853;
-color:white;
-font-size:18px;
-border-radius:8px;
-cursor:pointer;
+  width:100%;
+  padding:15px;
+  margin-top:10px;
+  border:none;
+  background:#00c853;
+  color:white;
+  font-size:18px;
+  border-radius:8px;
+  cursor:pointer;
 }
 
 .signup-link{margin-top:15px;font-size:14px;}
 .signup-link a{color:white;font-weight:bold;}
 
-/* Centered toast */
 .toast{
-position:fixed;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%) scale(0.9);
-background:#1f7a4c;
-color:white;
-padding:18px 30px;
-border-radius:10px;
-box-shadow:0 15px 40px rgba(0,0,0,0.35);
-opacity:0;
-transition:0.35s;
-z-index:9999;
-font-size:16px;
-text-align:center;
-min-width:220px;
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%) scale(0.9);
+  background:#1f7a4c;
+  color:white;
+  padding:18px 30px;
+  border-radius:10px;
+  box-shadow:0 15px 40px rgba(0,0,0,0.35);
+  opacity:0;
+  transition:0.35s;
+  z-index:9999;
+  font-size:16px;
+  text-align:center;
+  min-width:220px;
 }
 .toast.show{
-opacity:1;
-transform:translate(-50%,-50%) scale(1);
+  opacity:1;
+  transform:translate(-50%,-50%) scale(1);
 }
 </style>
 </head>
@@ -119,7 +118,6 @@ Don't have an account? <a href="signup.html">Sign up</a>
 <div id="toast" class="toast"></div>
 
 <script>
-
 /* TOAST FUNCTION */
 function showToast(msg,color="#1f7a4c"){
   const t=document.getElementById("toast");
@@ -139,7 +137,6 @@ const firebaseConfig = {
   messagingSenderId: "953454788272",
   appId: "1:953454788272:android:961fd704f587cf1b8c8575"
 };
-
 firebase.initializeApp(firebaseConfig);
 
 const auth = firebase.auth();
@@ -147,17 +144,16 @@ const db = firebase.database();
 
 /* AUTO REDIRECT IF LOGGED IN OR REMEMBERED */
 auth.onAuthStateChanged(user=>{
-  if(user){ 
+  if(user){
     if(localStorage.getItem("rememberMe")==="true"){
-      window.location.href="dashboard.html"; 
+      window.location.href="dashboard.html";
     }
   }
 });
 
 /* PREFILL REMEMBERED LOGIN */
 window.onload = function(){
-  const remembered = localStorage.getItem("rememberMe");
-  if(remembered==="true"){
+  if(localStorage.getItem("rememberMe")==="true"){
     document.getElementById("rememberMe").checked = true;
     const storedLogin = localStorage.getItem("login");
     const storedPass = localStorage.getItem("password");
@@ -168,16 +164,15 @@ window.onload = function(){
 
 /* SIGNIN FUNCTION */
 function signin(){
-  const login=document.getElementById("login").value.trim();
-  const password=document.getElementById("password").value;
-  const remember=document.getElementById("rememberMe").checked;
+  const login = document.getElementById("login").value.trim();
+  const password = document.getElementById("password").value;
+  const remember = document.getElementById("rememberMe").checked;
 
   if(!login || !password){
     showToast("Enter username/email and password","#e53935");
     return;
   }
 
-  /* Helper to store credentials if remember me checked */
   function handleRemember(){
     if(remember){
       localStorage.setItem("rememberMe","true");
@@ -190,44 +185,69 @@ function signin(){
     }
   }
 
-  /* IF EMAIL */
+  /* FUNCTION TO PROCESS REFERRAL BONUS AFTER FIRST DEPOSIT */
+  function processReferral(uid){
+    db.ref("users/"+uid).once("value").then(snap=>{
+      const userData = snap.val();
+      if(userData && userData.referrer){
+        const refUid = userData.referrer.uid;
+        // Check if user has made first deposit
+        if(userData.balance >= 1){ // assuming any deposit >0 counts
+          db.ref("users/"+refUid+"/balance").once("value").then(bSnap=>{
+            const oldBalance = bSnap.val() || 0;
+            db.ref("users/"+refUid+"/balance").set(oldBalance + 10); // $10 bonus
+            db.ref("users/"+refUid+"/referral_bonus").push({
+              from: uid,
+              amount:10,
+              timestamp:new Date().toISOString()
+            });
+            showToast("Referral bonus credited to your referrer!");
+          });
+        }
+      }
+    });
+  }
+
+  /* SIGNIN USING EMAIL OR USERNAME */
   if(login.includes("@")){
     auth.signInWithEmailAndPassword(login,password)
-    .then(()=>{
+    .then(userCred=>{
       handleRemember();
-      redirect();
+      redirect(userCred.user.uid);
     })
     .catch(e=>showToast(e.message,"#e53935"));
     return;
   }
 
-  /* IF USERNAME -> SEARCH DATABASE */
-  db.ref("users").once("value",snap=>{
-    let foundEmail=null;
-    snap.forEach(child=>{
-      if(child.val().username.toLowerCase() === login.toLowerCase()){
-        foundEmail=child.val().email;
-      }
-    });
-
-    if(!foundEmail){
+  /* USERNAME LOGIN */
+  db.ref("users").orderByChild("username").equalTo(login).once("value")
+  .then(snapshot=>{
+    if(snapshot.exists()){
+      let foundEmail = null;
+      let uid = null;
+      snapshot.forEach(child=>{
+        foundEmail = child.val().email;
+        uid = child.key;
+      });
+      auth.signInWithEmailAndPassword(foundEmail,password)
+      .then(userCred=>{
+        handleRemember();
+        redirect(userCred.user.uid);
+      })
+      .catch(e=>showToast("Wrong password","#e53935"));
+    } else {
       showToast("Username not found","#e53935");
-      return;
     }
-
-    auth.signInWithEmailAndPassword(foundEmail,password)
-    .then(()=>{
-      handleRemember();
-      redirect();
-    })
-    .catch(e=>showToast("Wrong password","#e53935"));
   });
-
 }
 
-function redirect(){
+function redirect(uid){
   showToast("Login successful");
-  setTimeout(()=>window.location.href="dashboard.html",1200);
+  // Process referral bonus after login and balance check
+  setTimeout(()=>{
+    processReferral(uid);
+    window.location.href="dashboard.html";
+  },1200);
 }
 
 </script>
