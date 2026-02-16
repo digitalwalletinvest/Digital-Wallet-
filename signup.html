@@ -11,63 +11,63 @@
 
 <style>
 body{
-margin:0;
-font-family:Arial, sans-serif;
-background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
-color:white;
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  color:white;
 }
 
 .card{
-background:#1f7a4c;   /* corporate green */
-color:white;
-padding:40px;
-border-radius:15px;
-width:95%;
-max-width:420px;
-box-shadow:0 15px 40px rgba(0,0,0,0.3);
-text-align:center;
+  background:#1f7a4c;   /* corporate green */
+  color:white;
+  padding:40px;
+  border-radius:15px;
+  width:95%;
+  max-width:420px;
+  box-shadow:0 15px 40px rgba(0,0,0,0.3);
+  text-align:center;
 }
 
 h1{margin-bottom:5px;color:white;}
-.subtitle{color:#e8f5e9;margin-bottom:25px;}
+.subtitle{color:#e8f5e9;margin-bottom:20px;}
 
 input{
-width:100%;
-padding:14px;
-margin:8px 0;
-border-radius:8px;
-border:1px solid #ddd;
-font-size:15px;
+  width:100%;
+  padding:14px;
+  margin:8px 0;
+  border-radius:8px;
+  border:1px solid #ddd;
+  font-size:15px;
 }
 
 .signup-btn{
-width:100%;
-padding:15px;
-margin-top:10px;
-border:none;
-background:#00c853;
-color:white;
-font-size:18px;
-border-radius:8px;
-cursor:pointer;
+  width:100%;
+  padding:15px;
+  margin-top:10px;
+  border:none;
+  background:#00c853;
+  color:white;
+  font-size:18px;
+  border-radius:8px;
+  cursor:pointer;
 }
 
 .signup-btn:hover{background:#00e676;}
 
 .google-btn{
-width:100%;
-padding:13px;
-margin-top:15px;
-border:none;
-background:#4285F4;
-color:white;
-font-size:16px;
-border-radius:8px;
-cursor:pointer;
+  width:100%;
+  padding:13px;
+  margin-top:15px;
+  border:none;
+  background:#4285F4;
+  color:white;
+  font-size:16px;
+  border-radius:8px;
+  cursor:pointer;
 }
 
 .signin-link{margin-top:15px;font-size:14px;}
@@ -76,25 +76,25 @@ cursor:pointer;
 .small{margin-top:18px;font-size:13px;color:#e8f5e9;}
 
 .toast{
-position:fixed;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%) scale(0.9);
-background:#1f7a4c;
-color:white;
-padding:16px 28px;
-border-radius:8px;
-box-shadow:0 10px 25px rgba(0,0,0,0.3);
-opacity:0;
-transition:0.5s;
-z-index:9999;
-font-size:16px;
-text-align:center;
-min-width:220px;
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%) scale(0.9);
+  background:#1f7a4c;
+  color:white;
+  padding:16px 28px;
+  border-radius:8px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.3);
+  opacity:0;
+  transition:0.5s;
+  z-index:9999;
+  font-size:16px;
+  text-align:center;
+  min-width:220px;
 }
 .toast.show{
-opacity:1;
-transform:translate(-50%,-50%) scale(1);
+  opacity:1;
+  transform:translate(-50%,-50%) scale(1);
 }
 </style>
 </head>
@@ -111,53 +111,52 @@ transform:translate(-50%,-50%) scale(1);
 <input type="tel" id="phone" placeholder="Phone number (e.g., +256...)">
 <input type="password" id="password" placeholder="Password (min 6 characters)">
 <input type="password" id="confirmPassword" placeholder="Confirm Password">
+<input type="text" id="referral" placeholder="Referral Username (optional)">
 
 <button class="signup-btn" onclick="signup()">Create Account</button>
 <button class="google-btn" onclick="googleSignup()">Continue with Google</button>
 
 <div class="signin-link">
-Already have account? <a href="signin.html">Sign in</a>
+Already have an account? <a href="signin.html">Sign in</a>
 </div>
 
 <div class="small">Secure investment platform</div>
-
 </div>
 
 <div id="toast" class="toast"></div>
 
 <script>
-
 /* TOAST FUNCTION */
 function showToast(msg,color="#1f7a4c"){
-const t=document.getElementById("toast");
-t.innerText=msg;
-t.style.background=color;
-t.classList.add("show");
-setTimeout(()=>t.classList.remove("show"),3000);
+  const t=document.getElementById("toast");
+  t.innerText=msg;
+  t.style.background=color;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),3000);
 }
 
 /* FIREBASE CONFIG */
 const firebaseConfig = {
-apiKey: "AIzaSyDaEphuY2kQue8m-20DDs68JDgQirAycBE",
-authDomain: "digital-wallet-40297.firebaseapp.com",
-databaseURL: "https://digital-wallet-40297-default-rtdb.firebaseio.com",
-projectId: "digital-wallet-40297",
-storageBucket: "digital-wallet-40297.firebasestorage.app",
-messagingSenderId: "953454788272",
-appId: "1:953454788272:android:961fd704f587cf1b8c8575"
+  apiKey: "AIzaSyDaEphuY2kQue8m-20DDs68JDgQirAycBE",
+  authDomain: "digital-wallet-40297.firebaseapp.com",
+  databaseURL: "https://digital-wallet-40297-default-rtdb.firebaseio.com",
+  projectId: "digital-wallet-40297",
+  storageBucket: "digital-wallet-40297.firebasestorage.app",
+  messagingSenderId: "953454788272",
+  appId: "1:953454788272:android:961fd704f587cf1b8c8575"
 };
-
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.database();
 
 /* SIGNUP FUNCTION */
 function signup(){
-  const username=document.getElementById("username").value.trim();
-  const email=document.getElementById("email").value.trim();
-  const phone=document.getElementById("phone").value.trim();
-  const password=document.getElementById("password").value;
-  const confirm=document.getElementById("confirmPassword").value;
+  const username = document.getElementById("username").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const password = document.getElementById("password").value;
+  const confirm = document.getElementById("confirmPassword").value;
+  const referral = document.getElementById("referral").value.trim();
 
   if(!username || !email || !phone || !password || !confirm){
     showToast("Please fill all fields","#e53935");
@@ -180,16 +179,37 @@ function signup(){
   }
 
   auth.createUserWithEmailAndPassword(email,password)
-  .then((userCredential)=>{
-    const uid=userCredential.user.uid;
-    db.ref("users/"+uid).set({
+  .then(userCredential=>{
+    const uid = userCredential.user.uid;
+    const userData = {
       username,
       email,
       phone,
       balance:0,
       created:new Date().toISOString()
-    });
-    showToast("Account created successfully!");
+    };
+
+    // Save user
+    db.ref("users/"+uid).set(userData);
+
+    // Handle referral if exists
+    if(referral){
+      db.ref("users").orderByChild("username").equalTo(referral).once("value",snap=>{
+        if(snap.exists()){
+          snap.forEach(child=>{
+            const refUid = child.key;
+            const bonusRef = db.ref("users/"+refUid+"/referrals");
+            bonusRef.push({uid, username, created:new Date().toISOString()});
+          });
+          showToast("Account created with referral!");
+        } else {
+          showToast("Referral username not found, account created anyway.");
+        }
+      });
+    } else {
+      showToast("Account created successfully!");
+    }
+
     setTimeout(()=>window.location.href="dashboard.html",1500);
   })
   .catch(error=>showToast(error.message,"#e53935"));
@@ -197,10 +217,10 @@ function signup(){
 
 /* GOOGLE SIGNUP */
 function googleSignup(){
-  const provider=new firebase.auth.GoogleAuthProvider();
+  const provider = new firebase.auth.GoogleAuthProvider();
   auth.signInWithPopup(provider)
-  .then((result)=>{
-    const user=result.user;
+  .then(result=>{
+    const user = result.user;
     db.ref("users/"+user.uid).update({
       username:user.displayName || "Google User",
       email:user.email,
@@ -213,8 +233,6 @@ function googleSignup(){
   })
   .catch(error=>showToast(error.message,"#e53935"));
 }
-
 </script>
-
 </body>
 </html>
