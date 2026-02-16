@@ -10,7 +10,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
 <style>
-
 body{
 margin:0;
 font-family:Arial, sans-serif;
@@ -42,6 +41,17 @@ margin:8px 0;
 border-radius:8px;
 border:1px solid #ddd;
 font-size:15px;
+}
+
+.checkbox-container{
+display:flex;
+align-items:center;
+margin:5px 0;
+font-size:14px;
+}
+
+.checkbox-container input[type="checkbox"]{
+margin-right:8px;
 }
 
 .signin-btn{
@@ -81,7 +91,6 @@ min-width:220px;
 opacity:1;
 transform:translate(-50%,-50%) scale(1);
 }
-
 </style>
 </head>
 
@@ -94,6 +103,10 @@ transform:translate(-50%,-50%) scale(1);
 
 <input type="text" id="login" placeholder="Username or Email">
 <input type="password" id="password" placeholder="Password">
+
+<div class="checkbox-container">
+<input type="checkbox" id="rememberMe"> Remember Me
+</div>
 
 <button class="signin-btn" onclick="signin()">Sign In</button>
 
@@ -132,37 +145,67 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.database();
 
-/* AUTO REDIRECT IF LOGGED IN */
+/* AUTO REDIRECT IF LOGGED IN OR REMEMBERED */
 auth.onAuthStateChanged(user=>{
-  if(user){ window.location.href="dashboard.html"; }
+  if(user){ 
+    if(localStorage.getItem("rememberMe")==="true"){
+      window.location.href="dashboard.html"; 
+    }
+  }
 });
+
+/* PREFILL REMEMBERED LOGIN */
+window.onload = function(){
+  const remembered = localStorage.getItem("rememberMe");
+  if(remembered==="true"){
+    document.getElementById("rememberMe").checked = true;
+    const storedLogin = localStorage.getItem("login");
+    const storedPass = localStorage.getItem("password");
+    if(storedLogin) document.getElementById("login").value = storedLogin;
+    if(storedPass) document.getElementById("password").value = storedPass;
+  }
+}
 
 /* SIGNIN FUNCTION */
 function signin(){
-
   const login=document.getElementById("login").value.trim();
   const password=document.getElementById("password").value;
+  const remember=document.getElementById("rememberMe").checked;
 
   if(!login || !password){
     showToast("Enter username/email and password","#e53935");
     return;
   }
 
+  /* Helper to store credentials if remember me checked */
+  function handleRemember(){
+    if(remember){
+      localStorage.setItem("rememberMe","true");
+      localStorage.setItem("login",login);
+      localStorage.setItem("password",password);
+    } else {
+      localStorage.removeItem("rememberMe");
+      localStorage.removeItem("login");
+      localStorage.removeItem("password");
+    }
+  }
+
   /* IF EMAIL */
   if(login.includes("@")){
     auth.signInWithEmailAndPassword(login,password)
-    .then(()=>redirect())
+    .then(()=>{
+      handleRemember();
+      redirect();
+    })
     .catch(e=>showToast(e.message,"#e53935"));
     return;
   }
 
   /* IF USERNAME -> SEARCH DATABASE */
   db.ref("users").once("value",snap=>{
-
     let foundEmail=null;
-
     snap.forEach(child=>{
-      if(child.val().username===login){
+      if(child.val().username.toLowerCase() === login.toLowerCase()){
         foundEmail=child.val().email;
       }
     });
@@ -173,9 +216,11 @@ function signin(){
     }
 
     auth.signInWithEmailAndPassword(foundEmail,password)
-    .then(()=>redirect())
+    .then(()=>{
+      handleRemember();
+      redirect();
+    })
     .catch(e=>showToast("Wrong password","#e53935"));
-
   });
 
 }
