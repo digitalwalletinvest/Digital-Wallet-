@@ -22,7 +22,7 @@ color:white;
 }
 
 .card{
-background:#1f7a4c;
+background:#1f7a4c;   /* corporate green */
 color:white;
 padding:40px;
 border-radius:15px;
@@ -77,9 +77,9 @@ cursor:pointer;
 
 .toast{
 position:fixed;
-bottom:30px;
+top:50%;
 left:50%;
-transform:translateX(-50%) translateY(100px);
+transform:translate(-50%,-50%) scale(0.9);
 background:#1f7a4c;
 color:white;
 padding:16px 28px;
@@ -88,10 +88,13 @@ box-shadow:0 10px 25px rgba(0,0,0,0.3);
 opacity:0;
 transition:0.5s;
 z-index:9999;
+font-size:16px;
+text-align:center;
+min-width:220px;
 }
 .toast.show{
 opacity:1;
-transform:translateX(-50%) translateY(0);
+transform:translate(-50%,-50%) scale(1);
 }
 </style>
 </head>
@@ -105,7 +108,7 @@ transform:translateX(-50%) translateY(0);
 
 <input type="text" id="username" placeholder="Username">
 <input type="email" id="email" placeholder="Email">
-<input type="tel" id="phone" placeholder="Phone number">
+<input type="tel" id="phone" placeholder="Phone number (e.g., +256...)">
 <input type="password" id="password" placeholder="Password (min 6 characters)">
 <input type="password" id="confirmPassword" placeholder="Confirm Password">
 
@@ -124,6 +127,7 @@ Already have account? <a href="signin.html">Sign in</a>
 
 <script>
 
+/* TOAST FUNCTION */
 function showToast(msg,color="#1f7a4c"){
 const t=document.getElementById("toast");
 t.innerText=msg;
@@ -147,77 +151,67 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.database();
 
-/* SIGNUP */
+/* SIGNUP FUNCTION */
 function signup(){
+  const username=document.getElementById("username").value.trim();
+  const email=document.getElementById("email").value.trim();
+  const phone=document.getElementById("phone").value.trim();
+  const password=document.getElementById("password").value;
+  const confirm=document.getElementById("confirmPassword").value;
 
-const username=document.getElementById("username").value.trim();
-const email=document.getElementById("email").value.trim();
-const phone=document.getElementById("phone").value.trim();
-const password=document.getElementById("password").value;
-const confirm=document.getElementById("confirmPassword").value;
+  if(!username || !email || !phone || !password || !confirm){
+    showToast("Please fill all fields","#e53935");
+    return;
+  }
 
-if(!username || !email || !phone || !password || !confirm){
-showToast("Please fill all fields","#e53935");
-return;
-}
+  if(!/^\+\d{6,15}$/.test(phone)){
+    showToast("Phone number must start with country code (e.g., +256)","#e53935");
+    return;
+  }
 
-if(password.length<6){
-showToast("Password must be at least 6 characters","#e53935");
-return;
-}
+  if(password.length<6){
+    showToast("Password must be at least 6 characters","#e53935");
+    return;
+  }
 
-if(password!==confirm){
-showToast("Passwords do not match","#e53935");
-return;
-}
+  if(password!==confirm){
+    showToast("Passwords do not match","#e53935");
+    return;
+  }
 
-auth.createUserWithEmailAndPassword(email,password)
-.then((userCredential)=>{
-
-const uid=userCredential.user.uid;
-
-db.ref("users/"+uid).set({
-username,
-email,
-phone,
-balance:0,
-created:new Date().toISOString()
-});
-
-showToast("Account created successfully!");
-
-setTimeout(()=>window.location.href="dashboard.html",1500);
-
-})
-.catch(error=>showToast(error.message,"#e53935"));
-
+  auth.createUserWithEmailAndPassword(email,password)
+  .then((userCredential)=>{
+    const uid=userCredential.user.uid;
+    db.ref("users/"+uid).set({
+      username,
+      email,
+      phone,
+      balance:0,
+      created:new Date().toISOString()
+    });
+    showToast("Account created successfully!");
+    setTimeout(()=>window.location.href="dashboard.html",1500);
+  })
+  .catch(error=>showToast(error.message,"#e53935"));
 }
 
 /* GOOGLE SIGNUP */
 function googleSignup(){
-
-const provider=new firebase.auth.GoogleAuthProvider();
-
-auth.signInWithPopup(provider)
-.then((result)=>{
-
-const user=result.user;
-
-db.ref("users/"+user.uid).update({
-username:user.displayName || "Google User",
-email:user.email,
-phone:user.phoneNumber || "",
-balance:0,
-created:new Date().toISOString()
-});
-
-showToast("Google sign up successful");
-
-setTimeout(()=>window.location.href="dashboard.html",1500);
-
-})
-.catch(error=>showToast(error.message,"#e53935"));
-
+  const provider=new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider)
+  .then((result)=>{
+    const user=result.user;
+    db.ref("users/"+user.uid).update({
+      username:user.displayName || "Google User",
+      email:user.email,
+      phone:user.phoneNumber || "",
+      balance:0,
+      created:new Date().toISOString()
+    });
+    showToast("Google sign up successful");
+    setTimeout(()=>window.location.href="dashboard.html",1500);
+  })
+  .catch(error=>showToast(error.message,"#e53935"));
 }
 
 </script>
