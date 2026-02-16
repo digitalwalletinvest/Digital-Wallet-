@@ -1,1 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Digital Wallet Investment</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: white;
+            text-align: center;
+        }
+
+        .container {
+            padding: 40px 20px;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto 20px;
+        }
+
+        .features {
+            margin-top: 40px;
+        }
+
+        .feature-box {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            margin: 15px auto;
+            border-radius: 10px;
+            max-width: 500px;
+        }
+
+        .cta {
+            margin-top: 50px;
+        }
+
+        .signup-btn {
+            background: #00c853;
+            color: white;
+            padding: 15px 40px;
+            font-size: 18px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .signup-btn:hover {
+            background: #00e676;
+            transform: scale(1.05);
+        }
+
+        footer {
+            margin-top: 50px;
+            font-size: 14px;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <h1>Welcome to Digital Wallet Investment</h1>
+
+    <p>
+        Grow your money smarter. Invest securely. Track your earnings in real time.
+        Join thousands of investors already building financial freedom.
+    </p>
+
+    <div class="features">
+
+        <div class="feature-box">
+            <h3>💰 High ROI Investment Plans</h3>
+            <p>Earn competitive returns with transparent growth tracking.</p>
+        </div>
+
+        <div class="feature-box">
+            <h3>🔐 Secure & Reliable</h3>
+            <p>Your funds are protected with advanced Firebase security infrastructure.</p>
+        </div>
+
+        <div class="feature-box">
+            <h3>📊 Real-Time Dashboard</h3>
+            <p>Monitor your balance and investments live anytime, anywhere.</p>
+        </div>
+
+    </div>
+
+    <div class="cta">
+        <h2>Start Your Investment Journey Today</h2>
+        <button class="signup-btn" onclick="goToSignup()">Sign Up Now</button>
+    </div>
+
+    <footer>
+        © 2026 Digital Wallet Investment | All Rights Reserved
+    </footer>
+
+</div>
+
+<script>
+    // Firebase Configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyDaEphuY2kQue8m-20DDs68JDgQirAycBE",
+        authDomain: "digital-wallet-40297.firebaseapp.com",
+        databaseURL: "https://digital-wallet-40297-default-rtdb.firebaseio.com",
+        projectId: "digital-wallet-40297",
+        storageBucket: "digital-wallet-40297.firebasestorage.app",
+        messagingSenderId: "953454788272",
+        appId: "1:953454788272:android:961fd704f587cf1b8c8575"
+    };
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    // Example connection test
+    firebase.database().ref("platform_status").set({
+        online: true,
+        lastUpdated: new Date().toISOString()
+    });
+
+    // Redirect function
+    function goToSignup() {
+        window.location.href = "signup.html";
+    }
+</script>
+
+</body>
+  </html>
